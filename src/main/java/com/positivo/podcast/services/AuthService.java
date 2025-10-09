@@ -8,13 +8,17 @@ import com.positivo.podcast.entities.Usuario;
 import com.positivo.podcast.exceptions.EmailAlreadyExistsException;
 import com.positivo.podcast.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -26,6 +30,7 @@ public class AuthService {
     private TokenService tokenService;
 
     @Autowired
+    @Lazy
     private AuthenticationManager authenticationManager;
 
     public AuthResponseDto login(LoginRequestDto loginRequestDto) { // 1. Mudar o tipo de retorno
@@ -65,5 +70,12 @@ public class AuthService {
         novoUsuario.setRole("USER"); // Define a role padrão para novos usuários
 
         usuarioRepository.save(novoUsuario);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // O Spring Security usa este método para encontrar o usuário pelo email
+        return usuarioRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + username));
     }
 }

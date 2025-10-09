@@ -3,6 +3,7 @@ package com.positivo.podcast.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -70,6 +71,18 @@ public class GlobalExceptionHandler {
             e.getMessage(), // Mensagem vinda da exceção (ex: "Falha ao ler o arquivo...")
             request.getRequestURI()
         );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<StandardError> handleBadCredentials(BadCredentialsException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Não Autorizado",
+                "Credenciais inválidas. Verifique seu email e senha.",
+                request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 
