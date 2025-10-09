@@ -2,6 +2,8 @@ package com.positivo.podcast.services;
 
 import com.positivo.podcast.dtos.request.LoginRequestDto;
 import com.positivo.podcast.dtos.request.RegisterRequestDto;
+import com.positivo.podcast.dtos.response.AuthResponseDto;
+import com.positivo.podcast.dtos.response.UsuarioResponseDto;
 import com.positivo.podcast.entities.Usuario;
 import com.positivo.podcast.exceptions.EmailAlreadyExistsException;
 import com.positivo.podcast.repositories.UsuarioRepository;
@@ -26,16 +28,28 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public String login(LoginRequestDto loginRequestDto) {
-        // O AuthenticationManager verifica se o usuário e senha são válidos
+    public AuthResponseDto login(LoginRequestDto loginRequestDto) { // 1. Mudar o tipo de retorno
         var usernamePassword = new UsernamePasswordAuthenticationToken(
-            loginRequestDto.email(), 
+            loginRequestDto.email(),
             loginRequestDto.senha()
         );
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        // Se a autenticação for bem-sucedida, gera o token
-        return tokenService.generateToken((Usuario) auth.getPrincipal());
+        // 2. Pegar o objeto Usuario completo
+        var usuario = (Usuario) auth.getPrincipal();
+
+        // 3. Gerar o token
+        var token = tokenService.generateToken(usuario);
+
+        // 4. Criar o DTO de resposta do usuário
+        var usuarioDto = new UsuarioResponseDto(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getRole());
+
+        // 5. Retornar o DTO de autenticação completo
+        return new AuthResponseDto(token, usuarioDto);
     }
 
     public void register(RegisterRequestDto registerRequestDto) {

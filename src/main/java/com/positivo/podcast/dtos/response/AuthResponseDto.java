@@ -1,5 +1,6 @@
 package com.positivo.podcast.dtos.response;
 
 public record AuthResponseDto(
-    String token
+    String token,
+    UsuarioResponseDto usuario
 ) {}
