@@ -28,8 +28,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         // Endpoints públicos de autenticação e registro
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         
                         // Permite acesso PÚBLICO para qualquer requisição GET
                         .requestMatchers(HttpMethod.GET).permitAll()
