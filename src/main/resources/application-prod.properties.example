@@ -17,3 +17,6 @@ supabase.key.service=<INSERIR_CHAVE_SERVICE_DE_PRODUCAO>
 # Configuração do JWT de Produção
 jwt.secret=<INSERIR_SEGREDO_JWT_DE_PRODUCAO>
 jwt.expiration.ms=86400000
+
+# Configurações específicas para o ambiente de produção
+cors.allowed-origins=https://<seu-dominio-vercel-aqui>.vercel.app
